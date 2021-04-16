@@ -1,0 +1,56 @@
+# Taskfile.yml
+
+version: '3'
+
+dotenv: ['.env']
+
+output: prefixed
+
+vars:
+  env: environments/demo
+  stack: stacks/data
+
+env:
+
+tasks:
+
+  tf-init:
+    dir: {{ .env }}
+    cmds:
+      - terraform init -backend-config=backend.tfvars
+
+  tf-test:
+    dir: {{ .stack }}
+    cmds:
+      - terraform fmt
+      - terraform validate
+
+  tf-plan:
+    cmds:
+      - terraform plan
+
+  tf-apply:
+    cmds:
+      - terraform apply --auto-approve
+
+  tf-destroy:
+    cmds:
+      - terraform destroy --auto-approve
+
+  tf-doc:
+    cmds:
+      - terraform-docs markdown . --output-file README.md
+
+  tf-outputs:
+    cmds:
+      - terraform output 
+
+  tf-txt:
+    cmds:
+      - terraform output -raw bucket_domain_name  >> dns.txt 
+ 
+  plan:
+    desc: TF workflow.
+    cmds:
+      - task: tf-test
+      - task: tf-plan
